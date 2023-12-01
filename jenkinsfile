@@ -1,0 +1,38 @@
+pipeline{
+   agent any
+
+  stages{
+      stage("scm"){
+         steps{
+          git branch: 'main', url: 'https://github.com/ANTONYDAVID96/project-1.git'
+}
+    }
+      stage("Build image"){
+          steps{
+            script{
+                sh 'docker build -t antonydavid96/myapplication:1 .'
+          }
+}
+}
+       stage("push image to hub"){
+          steps{
+            script{
+            withCredentials([string(credentialsId: 'dockeranto', variable: 'docker_antony')]) {
+                sh "docker login -u antonydavid96 -p ${docker_antony}"
+            }
+            sh 'docker push antonydavid96/myapplication:1'
+  }
+}
+  }
+          stage("deploy to pro"){
+            steps{
+             script{
+                 def dockerRun ='docker run -itd --name samplepythonapplication -P 8080:8080 antonydavid96/myapplication:1'
+                 sshagent(['docker_ssh']) {
+                       sh "ssh -o StrictHostKeyChecking=no  ec2-user@54.160.162.195 ${dockerRun}"
+  }
+}
+          }
+   }
+  }
+}
