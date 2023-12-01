@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: hippo
-        image: antonydavid96/simple_web_app:1
+        image: antonydavid96/simple-python-application:1
         ports:
           - containerPort: 80
 ---
