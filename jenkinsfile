@@ -4,32 +4,32 @@ pipeline{
   stages{
       stage("scm"){
          steps{
-          git branch: 'main', url: 'https://github.com/ANTONYDAVID96/project-1.git'
+          git branch: 'main', url: 'https://github.com/ANTONYDAVID96/simple-python-webapp.git'
 }
     }
       stage("Build image"){
           steps{
             script{
-                sh 'docker build -t antonydavid96/myapplication:1 .'
+                sh 'docker build -t antonydavid96/simple-python-application:1 .'
           }
 }
 }
        stage("push image to hub"){
           steps{
             script{
-            withCredentials([string(credentialsId: 'dockeranto', variable: 'docker_antony')]) {
-                sh "docker login -u antonydavid96 -p ${docker_antony}"
+                withCredentials([string(credentialsId: 'docker_david', variable: 'docker_webapp')]) {
+                sh "docker login -u antonydavid96 -p ${docker_webapp}"
             }
-            sh 'docker push antonydavid96/myapplication:1'
+            sh 'docker push antonydavid96/simple-python-application:1'
   }
 }
   }
-          stage("deploy to pro"){
+          stage("deploy to Production"){
             steps{
              script{
-                 def dockerRun ='docker run -itd --name samplepythonapplication -P 8080:8080 antonydavid96/myapplication:1'
-                 sshagent(['docker_ssh']) {
-                       sh "ssh -o StrictHostKeyChecking=no  ec2-user@54.160.162.195 ${dockerRun}"
+                 def dockerRun ='docker run -d --name simplepythonwebapp -p 3000:3000 antonydavid96/simple-python-application:1'
+                  sshagent(['docker_ssh']) {
+                       sh "ssh -o StrictHostKeyChecking=no  ubuntu@54.145.12.50 ${dockerRun}"
   }
 }
           }
